@@ -106,9 +106,12 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+
     )
 }
 
@@ -134,6 +137,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
+
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -153,7 +158,10 @@ STATIC_URL = '/static/'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = '**************'
-EMAIL_HOST_PASSWORD = '********'
+EMAIL_HOST_USER = 'cinchstreamingservice@gmail.com'
+EMAIL_HOST_PASSWORD = 'mrSpdrfJ6X'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+GOOGLE_CLIENT_ID = '75793052674-16konood2u95ra0udlbddh8o5q6cfpen.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '2CsNAlN5pXH-up8lmc_I7EOC'
+SOCIAL_SECRET = "@8403784040-49J0FJ0E"

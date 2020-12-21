@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class Measurements(models.Model):
     id          = models.AutoField(primary_key=True)
-    owner = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Customer, on_delete=models.CASCADE)
     chest = models.FloatField(max_length=50, help_text='in inches')
     shoulder_width = models.FloatField(max_length=50, help_text='in inches')
     waist = models.FloatField(max_length=50, help_text='in inches')
