@@ -1,5 +1,6 @@
 from rest_framework import generics, status, views
-from .serializers import RegisterSerializer, EmailVerificationSerializer, LoginSerializer, CustomerSerializer, CustomerSerializerDetail
+from .serializers import (RegisterSerializer, EmailVerificationSerializer, LoginSerializer,
+                          CustomerSerializer, CustomerSerializerDetail, ChangePasswordSerializer, LogoutSerializer)
 from rest_framework.response import Response
 from .models import User, Customer, Admin
 from django.db import transaction
@@ -8,6 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import email_template
 from django.contrib.sites.shortcuts import get_current_site
 import jwt
+from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from django.urls import reverse # takes url name and gives us the path
 from drf_yasg.utils import swagger_auto_schema
@@ -86,8 +88,18 @@ class LoginView(generics.GenericAPIView):
 
         return Response(serializer.data, status.HTTP_200_OK)
 
-# class LogoutView(generics.GenericAPIView):
-#     def post(self, request):
-#         logout(request)
-#         data = {'Success': 'Logout Successful'}
-#         return Response(data=data, status=status.HTTP_200_OK)
+class LogoutView(generics.GenericAPIView):
+    serializer_class = LogoutSerializer
+    def post(self, request):
+        logout(request)
+        data = {'Success': 'Logout Successful'}
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    queryset = User.objects.all()
+    print(queryset, '---------------------------------------------------------')
+    permission_classes = [IsAuthenticated]
+
+
