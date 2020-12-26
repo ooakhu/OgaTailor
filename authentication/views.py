@@ -1,7 +1,7 @@
 from rest_framework import generics, status, views
 from .serializers import (RegisterSerializer, EmailVerificationSerializer, LoginSerializer,
                           CustomerSerializer, CustomerSerializerDetail, LogoutSerializer, ResetPasswordSerializer,
-                          SetNewPasswordSerializer, PhoneNumberSerializer)
+                          SetNewPasswordSerializer, PhoneNumberSerializer, OtpSerializer)
 from rest_framework.response import Response
 from .models import User, Customer, Admin
 from django.db import transaction
@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import email_template, generate_otp
 from django.contrib.sites.shortcuts import get_current_site
 import jwt
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.urls import reverse  # takes url name and gives us the path
 from drf_yasg.utils import swagger_auto_schema
@@ -203,3 +204,28 @@ class SendSmsView(generics.GenericAPIView):
             return Response({'message': 'OTP Sent!', 'otp': otp })
         except:
             return Response({'errors': 'Having problems sending code'})
+
+
+class VerifyOtpView(generics.GenericAPIView):
+    serializer_class = OtpSerializer
+
+    def post(self, request):
+        data = request.data
+        user = get_user_model().objects.filter(email=data['email'])
+
+        if not user.exists():
+            return Response({'errors': 'You are not registered'})
+
+        user = user[0]
+
+        if user.otp_code != data['otp_code']:
+            return Response({'errors': 'Please provide a valid OTP'})
+
+        otp_expired = OtpSerializer(data=data)
+
+        if not otp_expired:
+            return Response({'errors': 'OTP provided has expired'})
+
+        user.phone_verified = True
+        user.save()
+        return Response({'message': 'Phone Verified!'})

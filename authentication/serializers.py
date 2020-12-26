@@ -8,6 +8,7 @@ from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework.response import Response
+from django.utils import timezone
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -142,3 +143,23 @@ class PhoneNumberSerializer(serializers.Serializer):
             return Response({'error': 'Please provide a valid number'})
 
         return data
+
+
+class OtpSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(max_length=20)
+    otp_code = serializers.CharField(max_length=20)
+
+    class Meta:
+        model = User
+        fields = ['email', 'otp_code']
+
+    def validate(self, data):
+        user = get_user_model().objects.filter(otp_code=data['otp_code'])
+
+        if not user.exists():
+            return Response({'errors': 'Please Provide a valid otp'})
+
+        expiry_time = user[0].otp_code_expiry
+        if expiry_time > timezone():
+            return Response({'otp': data['otp_code']})
+        return Response({'errors': 'OTP provided has expired'})

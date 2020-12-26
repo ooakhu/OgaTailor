@@ -52,6 +52,7 @@ class User(AbstractUser):
     otp_code_expiry = models.DateTimeField(default=timezone.now)
     is_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
+    phone_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
