@@ -48,6 +48,8 @@ class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255)
     phone_number = PhoneNumberField()
+    otp_code = models.CharField(max_length=30, null=True)
+    otp_code_expiry = models.DateTimeField(default=timezone.now)
     is_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

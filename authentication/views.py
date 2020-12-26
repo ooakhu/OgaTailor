@@ -1,12 +1,13 @@
 from rest_framework import generics, status, views
 from .serializers import (RegisterSerializer, EmailVerificationSerializer, LoginSerializer,
-                          CustomerSerializer, CustomerSerializerDetail, LogoutSerializer, ResetPasswordSerializer, SetNewPasswordSerializer)
+                          CustomerSerializer, CustomerSerializerDetail, LogoutSerializer, ResetPasswordSerializer,
+                          SetNewPasswordSerializer, PhoneNumberSerializer)
 from rest_framework.response import Response
 from .models import User, Customer, Admin
 from django.db import transaction
 from django.contrib.auth import logout
 from rest_framework_simplejwt.tokens import RefreshToken
-from .utils import email_template
+from .utils import email_template, generate_otp
 from django.contrib.sites.shortcuts import get_current_site
 import jwt
 from django.conf import settings
@@ -16,6 +17,9 @@ from drf_yasg import openapi
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from twilio.rest import Client
+from datetime import timedelta
+from django.utils import timezone
 
 class RegisterView(generics.GenericAPIView):
     """View for registering new users"""
@@ -166,3 +170,36 @@ class SetNewPasswordAPIView(generics.GenericAPIView):
         return Response({'success': True, 'message': 'Password reset successful'}, status=status.HTTP_200_OK)
 
 
+class SendSmsView(generics.GenericAPIView):
+    serializer_class = PhoneNumberSerializer
+    otp = None
+
+    @transaction.atomic()
+    def post(self, request, otp=None):
+        data = request.data
+        email = data['email']
+        user = User.objects.get(email=email)
+        phone_number_valid = PhoneNumberSerializer(data=data)
+        if not phone_number_valid.is_valid():
+            return Response({'errors': 'Invalid phone number'})
+
+        phone_number = data['phone_number']
+        otp = self.otp
+        if otp is None:
+            otp = generate_otp()
+
+        user.otp_code = otp
+        user.phone_number = phone_number
+        expiry = timezone.now() + timedelta(minutes=30)
+        user.otp_code_expiry = expiry
+        user.save()
+
+
+        try:
+            client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+            message_to_broadcast = f'Your OgaTailor Verification code is {otp}'
+            client.messages.create(to=phone_number, from_=settings.TWILIO_NUMBER, body=message_to_broadcast)
+
+            return Response({'message': 'OTP Sent!', 'otp': otp })
+        except:
+            return Response({'errors': 'Having problems sending code'})

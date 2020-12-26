@@ -6,6 +6,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from phonenumber_field.serializerfields import PhoneNumberField
+from rest_framework.response import Response
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -124,3 +126,19 @@ class SetNewPasswordSerializer(serializers.Serializer):
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
         return super().validate(attrs)
+
+
+class PhoneNumberSerializer(serializers.Serializer):
+    phone_number = PhoneNumberField(required=False)
+    email = serializers.EmailField(max_length=255, min_length=3)
+
+    class Meta:
+        fields = ['phone_number', 'email']
+
+    def validate(self, data):
+        phone_number_valid = 'phone_number' in data and data['phone_number']
+
+        if not phone_number_valid:
+            return Response({'error': 'Please provide a valid number'})
+
+        return data
