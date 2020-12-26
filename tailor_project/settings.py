@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'authentication',
     'drf_yasg',
     'measurements',
+    'orders',
+    'socials',
 ]
 
 SIMPLE_JWT = {
@@ -164,4 +166,4 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 GOOGLE_CLIENT_ID = '75793052674-16konood2u95ra0udlbddh8o5q6cfpen.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '2CsNAlN5pXH-up8lmc_I7EOC'
-SOCIAL_SECRET = "@8403784040-49J0*****"
+SOCIAL_SECRET = "HUDBHDEU772Y@hgstg8"

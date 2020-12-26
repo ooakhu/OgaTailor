@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils import timezone
-import uuid
+
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
