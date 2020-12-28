@@ -5,15 +5,19 @@ from django.contrib.auth.models import User
 from authentication.models import Customer
 from django.http import Http404
 from .models import Products, Order, Cart
-from .serializer import OrdersSerializer
+from .serializers import OrdersSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework import generics
+from .permissions import IsOwner
 
 
 # Create your views here.
 
-class OrdersView(APIView):
+class OrdersView(generics.ListCreateAPIView):
     serializer_class = OrdersSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
 
     def get(self, request):
         orders = Order.objects.all()
@@ -22,16 +26,21 @@ class OrdersView(APIView):
 
     def post(self, request):
         order = request.data
-        serializer = OrdersSerializer(data=order)
+        context = {
+            "request": self.request,
+        }
+        serializer = OrdersSerializer(data=request.data, context=context)
         if serializer.is_valid(raise_exception=True):
-            order_saved = serializer.save()
+            serializer.save()
             return Response({'message': 'Success, your order has been created'}, status=status.HTTP_201_CREATED)
         return Response({"message": "Order could not be created this time. Please contact us."},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrderDetail(APIView):
+class OrderDetail(generics.ListCreateAPIView):
     serializer_class = OrdersSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    lookup_field = 'id'
 
     def get_object(self, pk):
         try:
