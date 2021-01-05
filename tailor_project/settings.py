@@ -12,7 +12,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import django_heroku
+import environ
 import os
+env = environ.Env()
+
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ap#z(wr1bg1l3-yvtk7#0o*&n4x39mk#c%rek3(wz@r)$gq**6'
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -160,13 +165,16 @@ STATIC_URL = '/static/'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'cinchstreamingservice@gmail.com'
-EMAIL_HOST_PASSWORD = 'mrSpdrfJ6X'
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-GOOGLE_CLIENT_ID = '75793052674-16konood2u95ra0udlbddh8o5q6cfpen.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '2CsNAlN5pXH-up8lmc_I7EOC'
-SOCIAL_SECRET = "HUDBHDEU772Y@hgstg8"
-TWILIO_ACCOUNT_SID = "AC15412955e28fe1f4960fb3faa09d8f6c"
-TWILIO_AUTH_TOKEN = "8e195bb39cf1aec84a102f739b60d42a"
-TWILIO_NUMBER = "+12564834126"
+GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET")
+SOCIAL_SECRET = env("SOCIAL_SECRET")
+TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN")
+TWILIO_NUMBER = env("TWILIO_NUMBER")
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
