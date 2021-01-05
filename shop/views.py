@@ -40,7 +40,9 @@ class OrdersView(generics.ListCreateAPIView):
 class OrderDetail(generics.ListCreateAPIView):
     serializer_class = OrdersSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Order.objects.all()
     lookup_field = 'id'
+
 
     def get_object(self, pk):
         try:

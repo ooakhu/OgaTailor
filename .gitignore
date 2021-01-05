@@ -10,8 +10,9 @@ tmp/
 venv/
 __pycache__/
 
-db.sqlite3
+
 
 # [Project]
 project/staticfiles
 # project/db/migrations/
+db.sqlite3

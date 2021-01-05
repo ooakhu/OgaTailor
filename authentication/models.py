@@ -28,7 +28,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password, username, **extra_fields):
         '''Create a superuser'''
 
-        extra_fields.setdefault("is_admin", False)
+        extra_fields.setdefault("is_admin", True)
         extra_fields.setdefault("is_superadmin", True)
         extra_fields.setdefault("email_verified", True)
         if password is None:
@@ -62,7 +62,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
     def tokens(self):
         refresh_token = RefreshToken.for_user(self)  # retrives both the refresh and access token of the user
