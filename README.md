@@ -8,7 +8,7 @@
 ### This system is only available to authenticated users
 
 ## As a User
-- Using the API endpoints: A user can signup, logout, request OTP, add measurements, add orders to cart.
+- Using the API endpoints: A user can signup with email or google, logout, request OTP, add measurements, add orders to cart.
 
 ## Visuals
 
